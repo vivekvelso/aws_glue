@@ -1,5 +1,6 @@
 import sys
 import uuid
+from pyspark.sql.functions import *
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -23,13 +24,15 @@ dept = glueContext.create_dynamic_frame.from_catalog(database = "default", table
 emp.drop_fields(['salary_increment'])
 dept = dept.drop_fields(['first_name','last_name','salary'])
 
+uuidUdf= udf(lambda : str(uuid.uuid4()),StringType())
+
 deptDf = dept.toDF().distinct()
-deptDf = deptDf.withColumn('department_id', uuid.uuid4())
-dept = DynamicFrame.fromDF(deptDf, glueContext, "dept")
+deptDf1 = deptDf.withColumn("department_id", uuidUdf())
+dept = DynamicFrame.fromDF(deptDf1, glueContext, "dept")
 
 empDf = emp.toDF()
-empDf = empDf.withColumn('employee_id', uuid.uuid4())
-emp = DynamicFrame.fromDF(empDf, glueContext, "emp")
+empDf1 = empDf.withColumn("employee_id", uuidUdf())
+emp = DynamicFrame.fromDF(empDf1, glueContext, "emp")
 
 emp = Join.apply(emp,dept,'dept_name','dept_name').drop_fields(['dept_name'])
 
