@@ -1,0 +1,19 @@
+create database pjd_db;
+use pjd_db;
+create table employee 
+( id  varchar(36) PRIMARY KEY, first_name text, last_name Text, salary numeric, department_id varchar(36)
+);
+
+create table department (
+ id varchar(36) PRIMARY KEY,
+ name Text, salary_increment numeric
+ );
+
+create table updated_salaries
+ (
+employee_id varchar(36), updated_salary numeric
+);
+
+
+
+
